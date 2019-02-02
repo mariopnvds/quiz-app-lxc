@@ -1,0 +1,45 @@
+{
+  "image": "images:ubuntu/18.04",
+  "name": "webserver-cpy",
+  "dependencies": [
+    "lynx",
+    "net-tools",
+    "git",
+    "npm",
+    "mariadb-client",
+    "glusterfs-client"
+  ],
+  "interfaces": [
+    {
+      "name": "eth0",
+      "network": "intra-lan1",
+      "address": "10.1.1.5/24"
+    },
+    {
+      "name": "eth1",
+      "network": "intra-lan2",
+      "address": "10.1.2.35/24"
+    }
+  ],
+  "forwarding": true,
+  "nagios": true,
+  "run": [
+    "git clone https://github.com/CORE-UPM/quiz_2019.git /root/quiz_2019 1>/dev/null",
+    "mkdir /root/quiz_2019/public/uploads",
+    "cd /root/quiz_2019; npm install 1>/dev/null",
+    "cd /root/quiz_2019; npm install -g forever 1>/dev/null",
+    "cd /root/quiz_2019; npm install --save mysql2 1>/dev/null"
+  ],
+  "cmd": [
+    "export DATABASE_URL=mysql://quiz:xxxx@10.1.2.1/quiz",
+    "export QUIZ_OPEN_REGISTER=yes",
+    "cd /root/quiz_2019; forever start bin/www"
+  ],
+  "env": {
+    "DATABASE_URL": "mysql://quiz:xxxx@10.1.2.1/quiz",
+    "QUIZ_OPEN_REGISTER": "yes"
+  },
+  "scripts": [
+    "lxc exec webserver-cpy1 -- bash -c \"mount -t glusterfs 10.1.2.18:/nas /root/quiz_2019/public/uploads\""
+  ]
+}

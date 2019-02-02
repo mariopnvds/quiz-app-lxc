@@ -1,0 +1,31 @@
+{
+  "image": "images:ubuntu/18.04",
+  "name": "loadbalancer",
+  "dependencies": [
+    "lynx",
+    "net-tools",
+    "tcpdump",
+    "traceroute",
+    "nmap",
+    "haproxy"
+  ],
+  "interfaces": [
+    {
+      "name": "eth0",
+      "network": "intra-lan0",
+      "address": "10.1.0.2/24",
+      "gateway": "10.1.0.1"
+    },
+    {
+      "name": "eth1",
+      "network": "intra-lan1",
+      "address": "10.1.1.1/24"
+    }
+  ],
+  "forwarding": true,
+  "nagios": true,
+  "scripts": [
+    "lxc file push ../scripts/haproxy-upgrade.cfg loadbalancer1/etc/haproxy/haproxy.cfg",
+    "lxc exec loadbalancer1 -- bash -c \"service haproxy restart\""
+  ]
+}

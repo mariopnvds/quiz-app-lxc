@@ -1,0 +1,14 @@
+{
+  "image": "String: this is the lxc image that will be launched.",                    
+  "name": "String: this is the name we want the container to have. Names are always containing a number at the end.",
+  "privileged": "Boolean: set to true if container config must be done under priviledged conditions",
+  "dependencies": "[String]: here we set all the programs we want to install in all the containers via package manager. At the time only apt-get is enabled.",
+  "interfaces": "[{name String, network String, address String, gateway String}]: 'name' is the name of the interface, 'network' is the lan (default if we dont want specific config) see ifupdown for the rest.",
+  "forwarding": "Boolean: if we want this container to forward IP packets.",
+  "run": "[String]: list of commands we want to run on the container after installation completes. In case of replication they will be run on each container.",
+  "cmd": "[String]: list of commands we want to be run everytime the container boots up. In case of replication they will be run on each container.",
+  "env": "{String: String}: list of key/value with the environment variables. Note that env variables aren't present on _lxc exec_ commands, but they are when you log in the container.",
+  "scripts": "[String]: literal scripts to be run after all the containers have been launched. Here we can set container-specific commands in case of replicas.",
+  "replication": "Integer: If we just want a container we can wether set it to 0, 1 or ommit it. If set to 2, (p.e.) 2 containers will be created.",
+  "nagios": "Boolean: set to true if you want to include this container set into the monitored network. Note that a nagios container must be created first in order for this to work."
+}

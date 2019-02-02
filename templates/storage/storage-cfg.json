@@ -1,0 +1,27 @@
+{
+  "image": "images:ubuntu/16.04",
+  "name": "storage",
+  "privileged": true,
+  "dependencies": [
+    "net-tools",
+    "glusterfs-server"
+  ],
+  "interfaces": [
+    {
+      "name": "eth0",
+      "network": "intra-lan2",
+      "address": "10.1.2.16/24"
+    }
+  ],
+  "scripts": [
+    "lxc exec storage1 -- bash -c  \"gluster peer probe 10.1.2.17\"",
+    "lxc exec storage1 -- bash -c  \"gluster peer probe 10.1.2.18\"",
+    "lxc exec storage1 -- bash -c  \"gluster volume create nas replica 3 10.1.2.16:/nas/ 10.1.2.17:/nas/ 10.1.2.18:/nas/ force\"",
+    "lxc exec storage1 -- bash -c  \"gluster volume start nas\"",
+    "lxc config set storage1 security.privileged false",
+    "lxc config set storage2 security.privileged false",
+    "lxc config set storage3 security.privileged false"
+  ],
+  "nagios": true,
+  "replication": 3
+}

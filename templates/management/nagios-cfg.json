@@ -1,0 +1,41 @@
+{
+  "image": "images:ubuntu/16.04",
+  "name": "nagios",
+  "dependencies": [
+    "lynx",
+    "net-tools",
+    "traceroute",
+    "nmap",
+    "autoconf gcc libc6 make wget unzip apache2 php libapache2-mod-php7.0 libgd2-xpm-dev",
+    "nagios-plugins"
+  ],
+  "interfaces": [
+    {
+      "name": "eth0",
+      "network": "intra-mgmt",
+      "address": "10.2.0.1/24"
+    }
+  ],
+  "run": [
+    "cd /tmp; wget -O nagioscore.tar.gz https://github.com/NagiosEnterprises/nagioscore/archive/nagios-4.4.1.tar.gz 1>/dev/null",
+    "cd /tmp; tar xzf nagioscore.tar.gz",
+    "cd /tmp/nagioscore-nagios-4.4.1/; sudo ./configure --with-httpd-conf=/etc/apache2/sites-enabled 1>/dev/null",
+    "cd /tmp/nagioscore-nagios-4.4.1/; sudo make all 1>/dev/null",
+    "cd /tmp/nagioscore-nagios-4.4.1/; sudo make install-groups-users 1>/dev/null",
+    "cd /tmp/nagioscore-nagios-4.4.1/; sudo usermod -a -G nagios www-data",
+    "cd /tmp/nagioscore-nagios-4.4.1/; sudo make install 1>/dev/null",
+    "cd /tmp/nagioscore-nagios-4.4.1/; sudo make install-daemoninit 1>/dev/null",
+    "cd /tmp/nagioscore-nagios-4.4.1/; sudo make install-commandmode 1>/dev/null",
+    "cd /tmp/nagioscore-nagios-4.4.1/; sudo make install-config 1>/dev/null",
+    "cd /tmp/nagioscore-nagios-4.4.1/; sudo make install-webconf 1>/dev/null",
+    "sudo a2enmod rewrite 1>/dev/null",
+    "sudo a2enmod cgi 1>/dev/null",
+    "echo \"admin\" | htpasswd -c -i /usr/local/nagios/etc/htpasswd.users nagiosadmin",
+    "cp /usr/lib/nagios/plugins/check_* /usr/local/nagios/libexec",
+    "mkdir /usr/local/nagios/etc/servers",
+    "touch /usr/local/nagios/etc/servers/clients.cfg",
+    "echo \"cfg_dir=/usr/local/nagios/etc/servers\" >> /usr/local/nagios/etc/nagios.cfg",
+    "sudo systemctl restart apache2.service",
+    "sudo systemctl start nagios.service"
+  ]
+}
